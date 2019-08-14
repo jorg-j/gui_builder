@@ -8,8 +8,6 @@ mouseposy = 0
 typeset = ''
 bgcol = "Black"
 fgcol = "White"
-#fonty = "FreeMono"
-#fonty = "Verdana"
 fonty = "Fixedsys"
 ###
 window = Tk()
@@ -83,5 +81,3 @@ btn_rel = Button(window, text="Relative", bg=bgcol, fg=fgcol, font=fonty, comman
 btn_rel.grid(column=7, row=9, sticky='EWNS')
 
 window.mainloop()
-
-
