@@ -1,9 +1,6 @@
 import pyautogui, time, location_handler
-pyautogui.hotkey('win')
+pyautogui.click(20,17)
+time.sleep(0.25)
 pyautogui.typewrite('notepad')
-time.sleep(0.2)
+time.sleep(0.25)
 pyautogui.hotkey('enter')
-time.sleep(0.1)
-with open("text.txt","r")as f:
-    text = f.read()
-pyautogui.typewrite(text)

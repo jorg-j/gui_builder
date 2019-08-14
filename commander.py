@@ -85,7 +85,6 @@ def afunt(com):
     st = "pyautogui.hotkey('alt','%s')" %(com)
     writer(st)
 
-
 def locate():
     pyautogui.alert("Position 1 then Press Enter","Notice","OK")
     mouseposx, mouseposy = pyautogui.position()

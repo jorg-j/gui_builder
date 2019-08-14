@@ -2,6 +2,8 @@ from tkinter import *
 ##from tkinter.ttk import *
 import os, json, shutil, time, datetime, pyautogui
 import commander as c
+import importlib
+
 
 mouseposx = 0
 mouseposy = 0
@@ -22,6 +24,9 @@ lbl_title.grid(column=2, row=0)
 lbl_status = Label(window, text=statuss, font=(fonty, 12))
 lbl_status.grid(column=2, row=5)
 
+def test():
+    import gui
+    importlib.reload(gui)
 
 ## Button
 btn_time = Button(window, text="Time Sleep", bg=bgcol, fg=fgcol, font=fonty, command=c.timedelay)
@@ -79,5 +84,8 @@ btn_clik = Button(window, text="Click", bg=bgcol, fg=fgcol, font=fonty, command=
 btn_clik.grid(column=6, row=9, sticky='EWNS')
 btn_rel = Button(window, text="Relative", bg=bgcol, fg=fgcol, font=fonty, command= lambda: c.relative())
 btn_rel.grid(column=7, row=9, sticky='EWNS')
+
+btn_launch = Button(window, text="Test File", bg="Green", fg=fgcol, font=fonty, command= lambda: test())
+btn_launch.grid(column=3, row=10, sticky='EWNS')
 
 window.mainloop()
