@@ -15,4 +15,3 @@ def locate_image(image):
             location = location
             time.sleep(1)
         
-## test
