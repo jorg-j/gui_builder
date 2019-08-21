@@ -1,4 +1,5 @@
 import pyautogui, time, location_handler
+
 pyautogui.hotkey('win')
 time.sleep(0.25)
 pyautogui.typewrite('notepad')
