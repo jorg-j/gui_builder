@@ -1,6 +1,11 @@
-import os, json, shutil, time, pyautogui
-from tkinter import *
+import json
+import os
+import shutil
+import time
 import uuid
+from tkinter import *
+
+import pyautogui
 
 
 def newdoc():

@@ -1,5 +1,6 @@
-import pyautogui
 import time
+
+import pyautogui
 
 
 def locate_image(image):
@@ -29,4 +30,3 @@ def locate_image_drag(image):
         except:
             location = location
             time.sleep(1)
-        
