@@ -12,4 +12,4 @@ pyautogui.hotkey('enter')
 time.sleep(0.25)
 with open("input.txt", "r")as f:
     intype = f.read()
-pyautogui.typewrite(intype, interval=0.001)
+pyautogui.typewrite(intype, interval=0.01)
