@@ -35,14 +35,11 @@ lbl_title.grid(column=2, row=0)
 lbl_status = Label(window, text=statuss, font=(fonty, 12))
 lbl_status.grid(column=2, row=5)
 
-
-
-
 ## Button
-btn_time = Button(window, text="Time Sleep", bg=bgcol, fg=fgcol, font=fonty, command=c.timedelay)
+btn_time = Button(window, text="Time Sleep", bg=bgcol, fg=fgcol, font=fonty, command=lambda:c.timedelay(0))
 btn_time.grid(column=2, row=1, sticky=default_location)
 
-btn_tsd = Button(window, text="Time Sleep Default", bg=bgcol, fg=fgcol, font=fonty, command=c.timedelayd)
+btn_tsd = Button(window, text="Time Sleep Default", bg=bgcol, fg=fgcol, font=fonty, command=lambda: c.timedelay(1))
 btn_tsd.grid(column=1, row=1, sticky=default_location)
 
 btn_type = Button(window, text="Type", bg=bgcol, fg=fgcol, font=fonty, command=c.typer)
@@ -60,11 +57,11 @@ btn_drag.grid(column=2, row=4, sticky=default_location)
 btn_newdoc = Button(window, text="New Doc", bg=bgcol, fg=fgcol, font=fonty, command=c.newdoc)
 btn_newdoc.grid(column=1, row=8, sticky=default_location)
 
-btn_tab = Button(window, text="TAB", bg=bgcol, fg=fgcol, font=fonty, command=c.tab)
+btn_tab = Button(window, text="TAB", bg=bgcol, fg=fgcol, font=fonty, command=lambda:c.hotkey('tab'))
 btn_tab.grid(column=1, row=6, sticky=default_location)
 
-btn_tabe = Button(window, text="ENTER", bg=bgcol, fg=fgcol, font=fonty, command=c.ent)
-btn_tabe.grid(column=2, row=6, sticky=default_location)
+btn_hotkey_enter = Button(window, text="ENTER", bg=bgcol, fg=fgcol, font=fonty, command=lambda:c.hotkey('enter'))
+btn_hotkey_enter.grid(column=2, row=6, sticky=default_location)
 
 btn_tabc = Button(window, text="COPY", bg=bgcol, fg=fgcol, font=fonty, command= lambda: c.cfunt('c'))
 btn_tabc.grid(column=3, row=3, sticky=default_location)
