@@ -46,7 +46,7 @@ def dragpos():
 def typer():
     '''Type out text from prompt box'''
     text_prompt = pyautogui.prompt()
-    st = "pyautogui.typewrite('%s')" %(text_prompt)
+    st = "pyautogui.write('%s')" %(text_prompt)
     writer(st)
 
 def hotkey(key):
