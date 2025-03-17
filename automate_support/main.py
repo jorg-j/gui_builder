@@ -1,200 +1,36 @@
-import curses
-import pyautogui as pg
-import time
-import sys
 import copy
+import curses
+import sys
+import time
 
+import pyautogui as pg
 
-def calculate_midpoint(win, text):
-    '''
-    Returns x y midpoint
-    '''
-    max_y, max_x = win.getmaxyx()1
-    half = int(max_x / 2)
-    return int(half - (len(text)/ 2)), int(max_y/2)
-
-def win_half(win):
-    max_y, max_x = win.getmaxyx()
-    return int(max_x / 2)   
-
+from utilities.calculations import calculate_midpoint, win_half
+from utilities.hotkeys import pyautogui_hotkey
+from utilities.screens import text_entry_screen
 
 
 def pyautogui_outputfile(win, output_filename):
-    text = ""
-    title = 'Enter Text - "-" for backspace'
-    while 1:
-
-        title_start_x, title_start_y = calculate_midpoint(win, title)
-        text_start_x, text_start_y = calculate_midpoint(win, text)
-
-        win.erase()
-
-        win.addstr(title_start_y+1, title_start_x, title)
-        win.addstr(title_start_y+2, title_start_x, f"Current Output File: {output_filename}")
-        win.addstr(text_start_y-1, text_start_x, text)
-
-        try:                 
-            key = win.getkey()
-            if str(key) == '\n':
-                break
-            elif str(key) == '-':
-                text = text[:-1]
-            else:
-                text += str(key)
-        except Exception as e:
-            pass
-    win.erase()
+    text = text_entry_screen(
+        win,
+        heading="Output File Name",
+        notes=f"Current Output Filename: {output_filename}",
+        text="",
+    )
 
     if not text:
-        text = output_filename
-    return text
+        return output_filename
+    return str(text)
 
 
 def pyautogui_comment(win):
-    text = ""
-    title = 'Enter Text - "-" for backspace'
-    while 1:
+    text = text_entry_screen(win, heading="Add Code Comment")
+    return f"# {text}"
 
-        title_start_x, title_start_y = calculate_midpoint(win, title)
-        text_start_x, text_start_y = calculate_midpoint(win, text)
-
-        win.erase()
-        win.addstr(title_start_y+1, title_start_x, title)
-        win.addstr(text_start_y-1, text_start_x, text)
-
-        try:                 
-            key = win.getkey()
-            if str(key) == '\n':
-                break
-            elif str(key) == '-':
-                text = text[:-1]
-            else:
-                text += str(key)
-        except Exception as e:
-            pass
-    win.erase()
-    return f"\n# {text}"
 
 def pyautogui_typer(win):
-    text = ""
-    title = 'Enter Text - "-" for backspace'
-    while 1:
-
-        title_start_x, title_start_y = calculate_midpoint(win, title)
-        text_start_x, text_start_y = calculate_midpoint(win, text)
-
-        win.erase()
-        win.addstr(title_start_y+1, title_start_x, title)
-        win.addstr(text_start_y-1, text_start_x, text)
-
-        try:                 
-            key = win.getkey()
-            if str(key) == '\n':
-                break
-            elif str(key) == '-':
-                text = text[:-1]
-            else:
-                text += str(key)
-        except Exception as e:
-            pass
-    win.erase()
+    text = text_entry_screen(win, heading="Type into Field")
     return f"pyautogui.write('{text}')"
-
-
-def pyautogui_hotkey(win):
-    title = '--- Add Hotkey Combo ---'
-    helptext = '[1] crtl | [2] alt | [3] shift | [4] esc | [0] copy | [9] paste'
-    control_keys = {
-    "ctrl": False,
-    "alt": False,
-    "shift": False,
-    "esc": False,
-    }
-
-    keys_pressed = set()
-
-
-
-    def build_checkbox(name, value):
-        if value:
-            return f"[x] - {name}"
-        return f"[ ] - {name}"
-    
-    def toggle_control(control_keys, lookup):
-        if control_keys[lookup]:
-            control_keys[lookup] = False
-        else:
-            control_keys[lookup] = True
-        return control_keys
-    
-    
-    while 1:
-        title_start_x, _ = calculate_midpoint(win, title)
-        max_y, max_x = win.getmaxyx()
-
-        win.erase()
-        win.addstr(1, title_start_x, title)
-        win.addstr(max_y-1, 1, helptext)
-
-        half = win_half(win)
-
-        key_status = [
-            build_checkbox(k, v)
-            for k, v in control_keys.items()
-        ]
-        key_max_len = max(len(i) for i in key_status)
-
-        for i, value in enumerate(key_status, start=3):
-            win.addstr(i, half - key_max_len, value)
-
-        for i, value in enumerate(keys_pressed, start=3):
-            win.addstr(i, half + 1, value)
-
-    
-        try:                 
-            key = win.getkey()
-            if str(key) == '\n':
-                break
-            elif key == '1':
-                control_keys = toggle_control(control_keys, 'ctrl')
-            elif key == '2':
-                control_keys = toggle_control(control_keys, 'alt')
-            elif key == '3':
-                control_keys = toggle_control(control_keys, 'shift')
-            elif key == '4':
-                control_keys = toggle_control(control_keys, 'esc')
-            elif key == '9':
-                return "pyautogui.hotkey('ctrl', 'v')"
-            elif key == '0':
-                return "pyautogui.hotkey('ctrl', 'c')"
-            else:
-                if key in keys_pressed:
-                    keys_pressed.remove(key)
-                else:
-                    keys_pressed.add(key)
-           
-
-        except Exception as e:
-            if str(e) != 'no input':
-                raise Exception(e)
-
-    
-    hotkeys = [
-        k
-        for k, v in control_keys.items()
-        if v
-    ]
-    if hotkeys or keys_pressed:
-        source = 'pyautogui.hotkey('
-        for item in hotkeys:
-            source += f"'{item}',"
-        for item in keys_pressed:
-            source += f"'{item}',"
-        source = source[:-1]
-        source += ')'
-        return source
-    win.erase()
-    return ""
 
 
 def pyautgui_menu(win):
@@ -206,7 +42,6 @@ def pyautgui_menu(win):
     delay_increment = 0.25
     output_filename = "output.py"
 
-
     actions_base = ["import time", "import pyautogui", "", "DEFAULTDELAY = 0.5"]
     actions = copy.deepcopy(actions_base)
     while 1:
@@ -215,74 +50,80 @@ def pyautgui_menu(win):
         x, y = pg.position()
         str_delay = "{:.2f}".format(delay)
         win.erase()
-        win.addstr(1,half, "--- OUTPUT ---")
-        win.addstr(1,1,"--- Pyautogui ---")
-        win.addstr(2,1,f"1. Click at mouse position: {x} {y}")
-        win.addstr(3,1,"2. Typewrite")
-        win.addstr(4,1, "3. Add Hotkey")
-        win.addstr(5,1, "4. Add Comment")
+        win.addstr(1, half, "--- OUTPUT ---")
+        win.addstr(1, 1, "--- Pyautogui ---")
+        win.addstr(2, 1, f"1. Click at mouse position: {x} {y}")
+        win.addstr(3, 1, "2. Typewrite")
+        win.addstr(4, 1, "3. Add Hotkey")
+        win.addstr(5, 1, "4. Add Comment")
 
+        win.addstr(
+            max_y - 1,
+            1,
+            f"[q] quit | [s] save | [c] clear | [d] default delay | [w] custom delay ({str_delay}) +- increment | [f] Output: {output_filename}",
+        )
 
-        win.addstr(max_y-1, 1, f"[q] quit | [s] save | [c] clear | [d] default delay | [w] custom delay ({str_delay}) +- increment | [f] Output: {output_filename}")
+        # Write out the actions
+        # GIVEN len actions is greater than the length of the screen
+        # THEN ROWS at the TOP will not be displayed and all text will push up
+        printed_actions = copy.deepcopy(actions)
 
-
-
-        for i, action in enumerate(actions, 2):
+        if len(printed_actions) > max_y - 3:
+            diff = max_y - 3 - len(printed_actions) 
+            printed_actions = printed_actions[diff:]
+            
+        for i, action in enumerate(printed_actions, 2):
             win.addstr(i, half, action)
 
-
         if saved:
-            win.addstr(max_y-2, 1, f"Saved to {output_filename}")
+            win.addstr(max_y - 2, 1, f"Saved to {output_filename}")
             elapsed = time.time() - start_time
             if elapsed > 5:
                 saved = False
 
+        try:
+            key = win.getkey()
+            match key:
+                case "1":
+                    actions.append(f"pyautogui.click({x}, {y})")
+                case "2":
+                    text = pyautogui_typer(win)
+                    actions.append(text)
+                case "3":
+                    hotkey = pyautogui_hotkey(win)
+                    actions.append(hotkey)
+                case "4":
+                    comment = pyautogui_comment(win)
+                    actions.append(comment)
+                case "f":
+                    output_filename = pyautogui_outputfile(win, output_filename)
 
-        try:                 
-           key = win.getkey()
-           match key:
-                case '1':
-                   actions.append(f"pyautogui.click({x}, {y})")
-                case '2':
-                   text = pyautogui_typer(win)
-                   actions.append(text)
-                case '3':
-                   hotkey = pyautogui_hotkey(win)
-                   actions.append(hotkey)
-                case '4':
-                   comment = pyautogui_comment(win)
-                   actions.append(comment)
-                case 'f':
-                   output_filename = pyautogui_outputfile(win, output_filename)
-
-                case 's':
-                    with open(str(output_filename), 'w')as f:
-                        f.write('\n'.join(actions))
+                case "s":
+                    with open(str(output_filename), "w") as f:
+                        f.write("\n".join(actions))
                     saved = True
                     start_time = time.time()
 
                 case "+":
-                   delay += delay_increment
+                    delay += delay_increment
                 case "-":
-                   if delay > 0.25:
-                       delay -= delay_increment
+                    if delay > 0.25:
+                        delay -= delay_increment
 
                 case "d":
-                   actions.append(f'time.sleep(DEFAULTDELAY)')
+                    actions.append(f"time.sleep(DEFAULTDELAY)")
 
                 case "w":
-                   actions.append(f"time.sleep({delay})")
+                    actions.append(f"time.sleep({delay})")
 
-                case 'c':
-                   actions = actions_base
-                case 'q':
-                   sys.exit(0)
-                   
+                case "c":
+                    actions = copy.deepcopy(actions_base)
+                case "q":
+                    sys.exit(0)
 
         except Exception as e:
-            if str(e) != 'no input':
+            if str(e) != "no input":
                 raise Exception(e)
-
 
 
 def main(win):
@@ -301,7 +142,7 @@ def main(win):
     # win.addstr(3,1,"2. Pyautogui")
     # win.refresh()
     # while 1:
-    #     try:                 
+    #     try:
     #        key = win.getkey()
     #        match key:
     #             case '1':
@@ -314,6 +155,6 @@ def main(win):
     #         if str(e) != 'no input':
     #             raise Exception(e)
 
-           
+
 if __name__ == "__main__":
     curses.wrapper(main)

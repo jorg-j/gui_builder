@@ -22,8 +22,9 @@ pkgs.mkShell rec {
     export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib"
     export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath buildInputs}:$LD_LIBRARY_PATH"
     export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib.outPath}/lib:$LD_LIBRARY_PATH"
-    python3 -m doctest main.py && python3 main.py
-    exit
+    #python3 -m doctest main.py && 
+    #python3 main.py
+    #exit
   
   '';
 }
