@@ -9,13 +9,71 @@ def calculate_midpoint(win, text):
     '''
     Returns x y midpoint
     '''
-    max_y, max_x = win.getmaxyx()
+    max_y, max_x = win.getmaxyx()1
     half = int(max_x / 2)
     return int(half - (len(text)/ 2)), int(max_y/2)
 
 def win_half(win):
     max_y, max_x = win.getmaxyx()
     return int(max_x / 2)   
+
+
+
+def pyautogui_outputfile(win, output_filename):
+    text = ""
+    title = 'Enter Text - "-" for backspace'
+    while 1:
+
+        title_start_x, title_start_y = calculate_midpoint(win, title)
+        text_start_x, text_start_y = calculate_midpoint(win, text)
+
+        win.erase()
+
+        win.addstr(title_start_y+1, title_start_x, title)
+        win.addstr(title_start_y+2, title_start_x, f"Current Output File: {output_filename}")
+        win.addstr(text_start_y-1, text_start_x, text)
+
+        try:                 
+            key = win.getkey()
+            if str(key) == '\n':
+                break
+            elif str(key) == '-':
+                text = text[:-1]
+            else:
+                text += str(key)
+        except Exception as e:
+            pass
+    win.erase()
+
+    if not text:
+        text = output_filename
+    return text
+
+
+def pyautogui_comment(win):
+    text = ""
+    title = 'Enter Text - "-" for backspace'
+    while 1:
+
+        title_start_x, title_start_y = calculate_midpoint(win, title)
+        text_start_x, text_start_y = calculate_midpoint(win, text)
+
+        win.erase()
+        win.addstr(title_start_y+1, title_start_x, title)
+        win.addstr(text_start_y-1, text_start_x, text)
+
+        try:                 
+            key = win.getkey()
+            if str(key) == '\n':
+                break
+            elif str(key) == '-':
+                text = text[:-1]
+            else:
+                text += str(key)
+        except Exception as e:
+            pass
+    win.erase()
+    return f"\n# {text}"
 
 def pyautogui_typer(win):
     text = ""
@@ -41,7 +99,6 @@ def pyautogui_typer(win):
             pass
     win.erase()
     return f"pyautogui.write('{text}')"
-
 
 
 def pyautogui_hotkey(win):
@@ -147,9 +204,10 @@ def pyautgui_menu(win):
     start_time = None
     delay = 0.25
     delay_increment = 0.25
+    output_filename = "output.py"
 
 
-    actions_base = ["import time", "import pyautogui", ""]
+    actions_base = ["import time", "import pyautogui", "", "DEFAULTDELAY = 0.5"]
     actions = copy.deepcopy(actions_base)
     while 1:
         max_y, max_x = win.getmaxyx()
@@ -162,9 +220,10 @@ def pyautgui_menu(win):
         win.addstr(2,1,f"1. Click at mouse position: {x} {y}")
         win.addstr(3,1,"2. Typewrite")
         win.addstr(4,1, "3. Add Hotkey")
+        win.addstr(5,1, "4. Add Comment")
 
 
-        win.addstr(max_y-1, 1, f"[q] quit | [s] save | [c] clear | [d] delay ({str_delay}) +- increment")
+        win.addstr(max_y-1, 1, f"[q] quit | [s] save | [c] clear | [d] default delay | [w] custom delay ({str_delay}) +- increment | [f] Output: {output_filename}")
 
 
 
@@ -173,7 +232,7 @@ def pyautgui_menu(win):
 
 
         if saved:
-            win.addstr(max_y-2, 1, "Saved to output.py")
+            win.addstr(max_y-2, 1, f"Saved to {output_filename}")
             elapsed = time.time() - start_time
             if elapsed > 5:
                 saved = False
@@ -190,8 +249,14 @@ def pyautgui_menu(win):
                 case '3':
                    hotkey = pyautogui_hotkey(win)
                    actions.append(hotkey)
+                case '4':
+                   comment = pyautogui_comment(win)
+                   actions.append(comment)
+                case 'f':
+                   output_filename = pyautogui_outputfile(win, output_filename)
+
                 case 's':
-                    with open('output.py', 'w')as f:
+                    with open(str(output_filename), 'w')as f:
                         f.write('\n'.join(actions))
                     saved = True
                     start_time = time.time()
@@ -203,7 +268,10 @@ def pyautgui_menu(win):
                        delay -= delay_increment
 
                 case "d":
-                   actions.append(f'time.sleep({delay})')
+                   actions.append(f'time.sleep(DEFAULTDELAY)')
+
+                case "w":
+                   actions.append(f"time.sleep({delay})")
 
                 case 'c':
                    actions = actions_base
@@ -221,28 +289,30 @@ def main(win):
     curses.curs_set(0)
     win.nodelay(True)
     win.clear()
-    max_y, max_x = win.getmaxyx()
-    half = int(max_x/2)
 
-    key = ''
+    pyautgui_menu(win)
+    # max_y, max_x = win.getmaxyx()
+    # half = int(max_x/2)
 
-    win.addstr(1,1,"--- Automation Support ---\n")
-    win.addstr(2,1,"1. Duckypad")
-    win.addstr(3,1,"2. Pyautogui")
-    win.refresh()
-    while 1:
-        try:                 
-           key = win.getkey()
-           match key:
-                case '1':
-                   pass
-                case '2':
-                   pyautgui_menu(win)
-                   break
+    # key = ''
 
-        except Exception as e:
-            if str(e) != 'no input':
-                raise Exception(e)
+    # win.addstr(1,1,"--- Automation Support ---\n")
+    # win.addstr(2,1,"1. Duckypad")
+    # win.addstr(3,1,"2. Pyautogui")
+    # win.refresh()
+    # while 1:
+    #     try:                 
+    #        key = win.getkey()
+    #        match key:
+    #             case '1':
+    #                pass
+    #             case '2':
+    #                pyautgui_menu(win)
+    #                break
+
+    #     except Exception as e:
+    #         if str(e) != 'no input':
+    #             raise Exception(e)
 
            
 if __name__ == "__main__":
