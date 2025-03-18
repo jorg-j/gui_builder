@@ -8,6 +8,7 @@ import pyautogui as pg
 from utilities.calculations import calculate_midpoint, win_half
 from utilities.hotkeys import pyautogui_hotkey
 from utilities.screens import text_entry_screen
+from utilities.locate_on_screen import window_locate_image
 
 
 def pyautogui_outputfile(win, output_filename):
@@ -42,7 +43,7 @@ def pyautgui_menu(win):
     delay_increment = 0.25
     output_filename = "output.py"
 
-    actions_base = ["import time", "import pyautogui", "", "DEFAULTDELAY = 0.5"]
+    actions_base = ["import time", "import pyautogui", "import location_handler", "", "DEFAULTDELAY = 0.5"]
     actions = copy.deepcopy(actions_base)
     while 1:
         max_y, max_x = win.getmaxyx()
@@ -56,6 +57,7 @@ def pyautgui_menu(win):
         win.addstr(3, 1, "2. Typewrite")
         win.addstr(4, 1, "3. Add Hotkey")
         win.addstr(5, 1, "4. Add Comment")
+        win.addstr(6, 1, "5. Locate Image")
 
         win.addstr(
             max_y - 1,
@@ -95,6 +97,10 @@ def pyautgui_menu(win):
                 case "4":
                     comment = pyautogui_comment(win)
                     actions.append(comment)
+                case "5":
+                    action = window_locate_image(win)
+                    if action:
+                        actions.append(action)
                 case "f":
                     output_filename = pyautogui_outputfile(win, output_filename)
 
